@@ -1,0 +1,27 @@
+﻿@model Facturacion.Models.ClienteID_Result
+@{
+    ViewBag.Title = "Contact";
+}
+<div class="container-fluid">
+    <form method="post">
+        <div class="row">
+            <div class="col-lg-4">
+                <label>Nombre Completo:</label>
+                <input type="text" name="NombreCliente" value="@Model.NombreCliente" />
+            </div>
+            <div class="col-lg-4">
+                <label>Saldo del Mes:</label>
+                <input type="text" name="SaldoMes" value="@Model.SaldoMes" />
+            </div>
+            <div class="col-lg-4">
+                <label>Abono del Mes:</label>
+                <input type="text" name="AbonoMes" value="@Model.AbonoMes" />
+            </div>
+            <div>
+                <button type="submit" class="btn">Modificar</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+

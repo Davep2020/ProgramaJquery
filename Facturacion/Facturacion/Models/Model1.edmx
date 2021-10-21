@@ -1,0 +1,454 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="FacturaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Clientes">
+          <Key>
+            <PropertyRef Name="CodigoCliente" />
+          </Key>
+          <Property Name="CodigoCliente" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NombreCliente" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SaldoMes" Type="int" />
+          <Property Name="AbonoMes" Type="int" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'Factura.dbo.DetalleRecibo' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="DetalleRecibo">
+          <Key>
+            <PropertyRef Name="NumeroRecibo" />
+            <PropertyRef Name="NumeroFacturaAbonada" />
+            <PropertyRef Name="MontoAbono" />
+          </Key>
+          <Property Name="NumeroRecibo" Type="int" Nullable="false" />
+          <Property Name="NumeroFacturaAbonada" Type="int" Nullable="false" />
+          <Property Name="MontoAbono" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EncabezadoRecibo">
+          <Key>
+            <PropertyRef Name="NumeroRecibo" />
+          </Key>
+          <Property Name="NumeroRecibo" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodigoCliente" Type="int" />
+          <Property Name="FechaRecibo" Type="varchar" MaxLength="50" />
+          <Property Name="MontoRecibo" Type="int" />
+        </EntityType>
+        <EntityType Name="EncabezafoFactura">
+          <Key>
+            <PropertyRef Name="NumeroFactura" />
+          </Key>
+          <Property Name="NumeroFactura" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodigoCliente" Type="int" />
+          <Property Name="FechaFactura" Type="varchar" MaxLength="50" />
+          <Property Name="MontoOriginal" Type="int" />
+          <Property Name="MontoAbonos" Type="int" />
+        </EntityType>
+        <Association Name="FK_DetalleRecibo_EncabezadoRecibo">
+          <End Role="EncabezadoRecibo" Type="Self.EncabezadoRecibo" Multiplicity="1" />
+          <End Role="DetalleRecibo" Type="Self.DetalleRecibo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EncabezadoRecibo">
+              <PropertyRef Name="NumeroRecibo" />
+            </Principal>
+            <Dependent Role="DetalleRecibo">
+              <PropertyRef Name="NumeroRecibo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DetalleRecibo_EncabezafoFactura">
+          <End Role="EncabezafoFactura" Type="Self.EncabezafoFactura" Multiplicity="1" />
+          <End Role="DetalleRecibo" Type="Self.DetalleRecibo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EncabezafoFactura">
+              <PropertyRef Name="NumeroFactura" />
+            </Principal>
+            <Dependent Role="DetalleRecibo">
+              <PropertyRef Name="NumeroFacturaAbonada" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EncabezadoRecibo_Clientes">
+          <End Role="Clientes" Type="Self.Clientes" Multiplicity="0..1" />
+          <End Role="EncabezadoRecibo" Type="Self.EncabezadoRecibo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clientes">
+              <PropertyRef Name="CodigoCliente" />
+            </Principal>
+            <Dependent Role="EncabezadoRecibo">
+              <PropertyRef Name="CodigoCliente" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EncabezafoFactura_Clientes">
+          <End Role="Clientes" Type="Self.Clientes" Multiplicity="0..1" />
+          <End Role="EncabezafoFactura" Type="Self.EncabezafoFactura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clientes">
+              <PropertyRef Name="CodigoCliente" />
+            </Principal>
+            <Dependent Role="EncabezafoFactura">
+              <PropertyRef Name="CodigoCliente" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="AgregaRecibo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="code" Type="int" Mode="In" />
+          <Parameter Name="Monto" Type="int" Mode="In" />
+          <Parameter Name="Factura" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ClienteID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="InsertCliente" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="NombreC" Type="varchar" Mode="In" />
+          <Parameter Name="Saldo" Type="int" Mode="In" />
+          <Parameter Name="AbonosMes" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ModificarCliente" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="NombreC" Type="varchar" Mode="In" />
+          <Parameter Name="Saldo" Type="int" Mode="In" />
+          <Parameter Name="AbonosMes" Type="int" Mode="In" />
+        </Function>
+        <Function Name="MuestraCliente" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="MuestralasFacturasCLIENTE" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="MuestraLosCientes" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="RecibosSelect" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="FacturaModelStoreContainer">
+          <EntitySet Name="Clientes" EntityType="Self.Clientes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EncabezadoRecibo" EntityType="Self.EncabezadoRecibo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EncabezafoFactura" EntityType="Self.EncabezafoFactura" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DetalleRecibo" EntityType="Self.DetalleRecibo" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[DetalleRecibo].[NumeroRecibo] AS [NumeroRecibo], 
+[DetalleRecibo].[NumeroFacturaAbonada] AS [NumeroFacturaAbonada], 
+[DetalleRecibo].[MontoAbono] AS [MontoAbono]
+FROM [dbo].[DetalleRecibo] AS [DetalleRecibo]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_DetalleRecibo_EncabezadoRecibo" Association="Self.FK_DetalleRecibo_EncabezadoRecibo">
+            <End Role="EncabezadoRecibo" EntitySet="EncabezadoRecibo" />
+            <End Role="DetalleRecibo" EntitySet="DetalleRecibo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleRecibo_EncabezafoFactura" Association="Self.FK_DetalleRecibo_EncabezafoFactura">
+            <End Role="EncabezafoFactura" EntitySet="EncabezafoFactura" />
+            <End Role="DetalleRecibo" EntitySet="DetalleRecibo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EncabezadoRecibo_Clientes" Association="Self.FK_EncabezadoRecibo_Clientes">
+            <End Role="Clientes" EntitySet="Clientes" />
+            <End Role="EncabezadoRecibo" EntitySet="EncabezadoRecibo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EncabezafoFactura_Clientes" Association="Self.FK_EncabezafoFactura_Clientes">
+            <End Role="Clientes" EntitySet="Clientes" />
+            <End Role="EncabezafoFactura" EntitySet="EncabezafoFactura" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="FacturaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="FacturaEntities" annotation:LazyLoadingEnabled="true">
+          <FunctionImport Name="RecibosSelect" ReturnType="Collection(FacturaModel.RecibosSelect_Result)" />
+          <EntitySet Name="Clientes" EntityType="FacturaModel.Clientes" />
+          <EntitySet Name="EncabezadoRecibo" EntityType="FacturaModel.EncabezadoRecibo" />
+          <EntitySet Name="EncabezafoFactura" EntityType="FacturaModel.EncabezafoFactura" />
+          <AssociationSet Name="FK_EncabezadoRecibo_Clientes" Association="FacturaModel.FK_EncabezadoRecibo_Clientes">
+            <End Role="Clientes" EntitySet="Clientes" />
+            <End Role="EncabezadoRecibo" EntitySet="EncabezadoRecibo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EncabezafoFactura_Clientes" Association="FacturaModel.FK_EncabezafoFactura_Clientes">
+            <End Role="Clientes" EntitySet="Clientes" />
+            <End Role="EncabezafoFactura" EntitySet="EncabezafoFactura" />
+          </AssociationSet>
+          <EntitySet Name="DetalleRecibo" EntityType="FacturaModel.DetalleRecibo" />
+          <AssociationSet Name="FK_DetalleRecibo_EncabezadoRecibo" Association="FacturaModel.FK_DetalleRecibo_EncabezadoRecibo">
+            <End Role="EncabezadoRecibo" EntitySet="EncabezadoRecibo" />
+            <End Role="DetalleRecibo" EntitySet="DetalleRecibo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleRecibo_EncabezafoFactura" Association="FacturaModel.FK_DetalleRecibo_EncabezafoFactura">
+            <End Role="EncabezafoFactura" EntitySet="EncabezafoFactura" />
+            <End Role="DetalleRecibo" EntitySet="DetalleRecibo" />
+          </AssociationSet>
+          <FunctionImport Name="InsertCliente">
+            <Parameter Name="NombreC" Mode="In" Type="String" />
+            <Parameter Name="Saldo" Mode="In" Type="Int32" />
+            <Parameter Name="AbonosMes" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ClienteID" ReturnType="Collection(FacturaModel.ClienteID_Result)">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ModificarCliente">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="NombreC" Mode="In" Type="String" />
+            <Parameter Name="Saldo" Mode="In" Type="Int32" />
+            <Parameter Name="AbonosMes" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="MuestraLosCientes" ReturnType="Collection(FacturaModel.MuestraLosCientes_Result)" />
+          <FunctionImport Name="MuestraCliente" ReturnType="Collection(FacturaModel.MuestraCliente_Result)" />
+          <FunctionImport Name="AgregaRecibo">
+            <Parameter Name="code" Mode="In" Type="Int32" />
+            <Parameter Name="Monto" Mode="In" Type="Int32" />
+            <Parameter Name="Factura" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="MuestralasFacturasCLIENTE" ReturnType="Collection(FacturaModel.MuestralasFacturasCLIENTE_Result)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="RecibosSelect_Result">
+          <Property Type="Int32" Name="NumeroRecibo" Nullable="false" />
+          <Property Type="Int32" Name="CodigoCliente" Nullable="false" />
+          <Property Type="String" Name="FechaRecibo" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="MontoRecibo" Nullable="false" />
+          <Property Type="Int32" Name="NumeroRecibo1" Nullable="false" />
+          <Property Type="Int32" Name="NumeroFacturaAbonada" Nullable="false" />
+          <Property Type="Int32" Name="MontoAbono" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="Clientes">
+          <Key>
+            <PropertyRef Name="CodigoCliente" />
+          </Key>
+          <Property Name="CodigoCliente" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NombreCliente" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SaldoMes" Type="Int32" />
+          <Property Name="AbonoMes" Type="Int32" />
+          <NavigationProperty Name="EncabezadoRecibo" Relationship="FacturaModel.FK_EncabezadoRecibo_Clientes" FromRole="Clientes" ToRole="EncabezadoRecibo" />
+          <NavigationProperty Name="EncabezafoFactura" Relationship="FacturaModel.FK_EncabezafoFactura_Clientes" FromRole="Clientes" ToRole="EncabezafoFactura" />
+        </EntityType>
+        <EntityType Name="EncabezadoRecibo">
+          <Key>
+            <PropertyRef Name="NumeroRecibo" />
+          </Key>
+          <Property Name="NumeroRecibo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CodigoCliente" Type="Int32" />
+          <Property Name="FechaRecibo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MontoRecibo" Type="Int32" />
+          <NavigationProperty Name="Clientes" Relationship="FacturaModel.FK_EncabezadoRecibo_Clientes" FromRole="EncabezadoRecibo" ToRole="Clientes" />
+          <NavigationProperty Name="DetalleRecibo" Relationship="FacturaModel.FK_DetalleRecibo_EncabezadoRecibo" FromRole="EncabezadoRecibo" ToRole="DetalleRecibo" />
+        </EntityType>
+        <EntityType Name="EncabezafoFactura">
+          <Key>
+            <PropertyRef Name="NumeroFactura" />
+          </Key>
+          <Property Name="NumeroFactura" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CodigoCliente" Type="Int32" />
+          <Property Name="FechaFactura" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MontoOriginal" Type="Int32" />
+          <Property Name="MontoAbonos" Type="Int32" />
+          <NavigationProperty Name="Clientes" Relationship="FacturaModel.FK_EncabezafoFactura_Clientes" FromRole="EncabezafoFactura" ToRole="Clientes" />
+          <NavigationProperty Name="DetalleRecibo" Relationship="FacturaModel.FK_DetalleRecibo_EncabezafoFactura" FromRole="EncabezafoFactura" ToRole="DetalleRecibo" />
+        </EntityType>
+        <Association Name="FK_EncabezadoRecibo_Clientes">
+          <End Type="FacturaModel.Clientes" Role="Clientes" Multiplicity="0..1" />
+          <End Type="FacturaModel.EncabezadoRecibo" Role="EncabezadoRecibo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clientes">
+              <PropertyRef Name="CodigoCliente" />
+            </Principal>
+            <Dependent Role="EncabezadoRecibo">
+              <PropertyRef Name="CodigoCliente" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EncabezafoFactura_Clientes">
+          <End Type="FacturaModel.Clientes" Role="Clientes" Multiplicity="0..1" />
+          <End Type="FacturaModel.EncabezafoFactura" Role="EncabezafoFactura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clientes">
+              <PropertyRef Name="CodigoCliente" />
+            </Principal>
+            <Dependent Role="EncabezafoFactura">
+              <PropertyRef Name="CodigoCliente" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DetalleRecibo">
+          <Key>
+            <PropertyRef Name="NumeroRecibo" />
+            <PropertyRef Name="NumeroFacturaAbonada" />
+            <PropertyRef Name="MontoAbono" />
+          </Key>
+          <Property Name="NumeroRecibo" Type="Int32" Nullable="false" />
+          <Property Name="NumeroFacturaAbonada" Type="Int32" Nullable="false" />
+          <Property Name="MontoAbono" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EncabezadoRecibo" Relationship="FacturaModel.FK_DetalleRecibo_EncabezadoRecibo" FromRole="DetalleRecibo" ToRole="EncabezadoRecibo" />
+          <NavigationProperty Name="EncabezafoFactura" Relationship="FacturaModel.FK_DetalleRecibo_EncabezafoFactura" FromRole="DetalleRecibo" ToRole="EncabezafoFactura" />
+        </EntityType>
+        <Association Name="FK_DetalleRecibo_EncabezadoRecibo">
+          <End Type="FacturaModel.EncabezadoRecibo" Role="EncabezadoRecibo" Multiplicity="1" />
+          <End Type="FacturaModel.DetalleRecibo" Role="DetalleRecibo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EncabezadoRecibo">
+              <PropertyRef Name="NumeroRecibo" />
+            </Principal>
+            <Dependent Role="DetalleRecibo">
+              <PropertyRef Name="NumeroRecibo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DetalleRecibo_EncabezafoFactura">
+          <End Type="FacturaModel.EncabezafoFactura" Role="EncabezafoFactura" Multiplicity="1" />
+          <End Type="FacturaModel.DetalleRecibo" Role="DetalleRecibo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EncabezafoFactura">
+              <PropertyRef Name="NumeroFactura" />
+            </Principal>
+            <Dependent Role="DetalleRecibo">
+              <PropertyRef Name="NumeroFacturaAbonada" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="ClienteID_Result">
+          <Property Type="Int32" Name="CodigoCliente" Nullable="false" />
+          <Property Type="String" Name="NombreCliente" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="SaldoMes" Nullable="true" />
+          <Property Type="Int32" Name="AbonoMes" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="MuestraLosCientes_Result">
+          <Property Type="Int32" Name="CodigoCliente" Nullable="false" />
+          <Property Type="String" Name="NombreCliente" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="SaldoMes" Nullable="true" />
+          <Property Type="Int32" Name="AbonoMes" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="MuestraCliente_Result">
+          <Property Type="Int32" Name="CodigoCliente" Nullable="false" />
+          <Property Type="String" Name="NombreCliente" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="SaldoMes" Nullable="true" />
+          <Property Type="Int32" Name="AbonoMes" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="MuestralasFacturasCLIENTE_Result">
+          <Property Type="Int32" Name="NumeroFactura" Nullable="false" />
+          <Property Type="Int32" Name="CodigoCliente" Nullable="true" />
+          <Property Type="String" Name="FechaFactura" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="MontoOriginal" Nullable="true" />
+          <Property Type="Int32" Name="MontoAbonos" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="FacturaModelStoreContainer" CdmEntityContainer="FacturaEntities">
+          <FunctionImportMapping FunctionImportName="RecibosSelect" FunctionName="FacturaModel.Store.RecibosSelect">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FacturaModel.RecibosSelect_Result">
+                <ScalarProperty Name="NumeroRecibo" ColumnName="NumeroRecibo" />
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="FechaRecibo" ColumnName="FechaRecibo" />
+                <ScalarProperty Name="MontoRecibo" ColumnName="MontoRecibo" />
+                <ScalarProperty Name="NumeroRecibo1" ColumnName="NumeroRecibo1" />
+                <ScalarProperty Name="NumeroFacturaAbonada" ColumnName="NumeroFacturaAbonada" />
+                <ScalarProperty Name="MontoAbono" ColumnName="MontoAbono" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Clientes">
+            <EntityTypeMapping TypeName="FacturaModel.Clientes">
+              <MappingFragment StoreEntitySet="Clientes">
+                <ScalarProperty Name="AbonoMes" ColumnName="AbonoMes" />
+                <ScalarProperty Name="SaldoMes" ColumnName="SaldoMes" />
+                <ScalarProperty Name="NombreCliente" ColumnName="NombreCliente" />
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EncabezadoRecibo">
+            <EntityTypeMapping TypeName="FacturaModel.EncabezadoRecibo">
+              <MappingFragment StoreEntitySet="EncabezadoRecibo">
+                <ScalarProperty Name="MontoRecibo" ColumnName="MontoRecibo" />
+                <ScalarProperty Name="FechaRecibo" ColumnName="FechaRecibo" />
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="NumeroRecibo" ColumnName="NumeroRecibo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EncabezafoFactura">
+            <EntityTypeMapping TypeName="FacturaModel.EncabezafoFactura">
+              <MappingFragment StoreEntitySet="EncabezafoFactura">
+                <ScalarProperty Name="MontoAbonos" ColumnName="MontoAbonos" />
+                <ScalarProperty Name="MontoOriginal" ColumnName="MontoOriginal" />
+                <ScalarProperty Name="FechaFactura" ColumnName="FechaFactura" />
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="NumeroFactura" ColumnName="NumeroFactura" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DetalleRecibo">
+            <EntityTypeMapping TypeName="FacturaModel.DetalleRecibo">
+              <MappingFragment StoreEntitySet="DetalleRecibo">
+                <ScalarProperty Name="MontoAbono" ColumnName="MontoAbono" />
+                <ScalarProperty Name="NumeroFacturaAbonada" ColumnName="NumeroFacturaAbonada" />
+                <ScalarProperty Name="NumeroRecibo" ColumnName="NumeroRecibo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="InsertCliente" FunctionName="FacturaModel.Store.InsertCliente" />
+          <FunctionImportMapping FunctionImportName="ClienteID" FunctionName="FacturaModel.Store.ClienteID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FacturaModel.ClienteID_Result">
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="NombreCliente" ColumnName="NombreCliente" />
+                <ScalarProperty Name="SaldoMes" ColumnName="SaldoMes" />
+                <ScalarProperty Name="AbonoMes" ColumnName="AbonoMes" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ModificarCliente" FunctionName="FacturaModel.Store.ModificarCliente" />
+          <FunctionImportMapping FunctionImportName="MuestraLosCientes" FunctionName="FacturaModel.Store.MuestraLosCientes">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FacturaModel.MuestraLosCientes_Result">
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="NombreCliente" ColumnName="NombreCliente" />
+                <ScalarProperty Name="SaldoMes" ColumnName="SaldoMes" />
+                <ScalarProperty Name="AbonoMes" ColumnName="AbonoMes" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="MuestraCliente" FunctionName="FacturaModel.Store.MuestraCliente">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FacturaModel.MuestraCliente_Result">
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="NombreCliente" ColumnName="NombreCliente" />
+                <ScalarProperty Name="SaldoMes" ColumnName="SaldoMes" />
+                <ScalarProperty Name="AbonoMes" ColumnName="AbonoMes" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="AgregaRecibo" FunctionName="FacturaModel.Store.AgregaRecibo" />
+          <FunctionImportMapping FunctionImportName="MuestralasFacturasCLIENTE" FunctionName="FacturaModel.Store.MuestralasFacturasCLIENTE">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FacturaModel.MuestralasFacturasCLIENTE_Result">
+                <ScalarProperty Name="NumeroFactura" ColumnName="NumeroFactura" />
+                <ScalarProperty Name="CodigoCliente" ColumnName="CodigoCliente" />
+                <ScalarProperty Name="FechaFactura" ColumnName="FechaFactura" />
+                <ScalarProperty Name="MontoOriginal" ColumnName="MontoOriginal" />
+                <ScalarProperty Name="MontoAbonos" ColumnName="MontoAbonos" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

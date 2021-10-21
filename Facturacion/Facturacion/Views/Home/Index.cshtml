@@ -1,0 +1,35 @@
+﻿@model List<Facturacion.Models.MuestraLosCientes_Result>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div>
+    <table class="table">
+        <tr>
+            <td><strong>Nombre Cliente</strong> </td>
+            <td><strong>Saldo Del Mes</strong></td>
+            <td><strong>Abonos Del Mes</strong></td>
+            <td><strong>Acciones</strong></td>
+        </tr>
+    @{ foreach (Facturacion.Models.MuestraLosCientes_Result posicion in Model)
+        {
+            <tr>
+
+
+                 <td><p>@posicion.NombreCliente</p></td>
+            
+                <td><p>@posicion.SaldoMes</p></td>
+                
+                <td><p> @posicion.AbonoMes</p></td>
+                <td><a href="~/Home/Contact?CodigoCliente=@posicion.CodigoCliente" class="btn btn-info">Modificar</a></td>
+              
+
+
+            </tr>
+
+        }
+    }
+
+
+</table>
+</div>

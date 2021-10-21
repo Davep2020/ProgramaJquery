@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewBag.Title = "Pagos";
+}
+
+<h2>Pagos</h2>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3">
+
+            <div class="form-group">
+                <label>Cliente:</label>
+                <select name="Cliente" id="Cliente" class="form-control"></select>
+            
+              
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table" id="conten">
+                <tr>
+                    <td><strong>#Factura       </strong></td>
+                    <td><strong>CodigoCliente      </strong></td>
+                    <td><strong>Fecha de Factura     </strong></td>
+                    <td><strong>Monto Original      </strong></td>
+                    <td><strong>Monto Abonos        </strong></td>
+                    <td><strong>Monto Por Abonar        </strong></td>
+                </tr>
+                <tbody id="Contenido">
+                       
+                    
+                </tbody>
+             
+            </table>
+
+        </div>
+    </div>
+    <div class="row">
+        <h1>Abono:</h1>
+
+
+        @using (Html.BeginForm("Recibos", "Home", FormMethod.Post))
+        {
+            <input type="text" id="ID" name="CodigoCliente" hidden value="" />
+            <input type="text" id="IDs" hidden name="MontoAbono" readonly value="" />
+            <input type="text" hidden id="IDc" name="NumeroFacturaAbonada" value="" />
+            <input type="text" id="ID1" hidden name="MontoAbono1" readonly value="" />
+            <input type="text" hidden id="ID2"  name="NumeroFacturaAbonada1" value="" />
+            <input type="text" id="ID3" class="ID3"hidden name="MontoAbono2" readonly value="" />
+            <input type="text" hidden id="ID4" name="NumeroFacturaAbonada2" value="" />
+            <button id="Con" type="submit" class="btn btn-secondary">Aplicar</button>
+        }
+
+    </div>
+</div>
+@section scripts{
+    <script src="~/Scripts/Ajax/Data.js"></script>
+
+}
